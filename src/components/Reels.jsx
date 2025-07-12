@@ -1,46 +1,55 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, ChevronLeft, ChevronRight, Instagram, Youtube, RotateCw } from 'lucide-react';
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  ChevronLeft,
+  ChevronRight,
+  Instagram,
+  Youtube,
+  RotateCw,
+} from 'lucide-react';
 import reel1 from '../assets/reel1.mp4';
 import reel2 from '../assets/reel2.mp4';
 
-const Reels = () => {
-  // Collaborators Data
+const Reels = ({ isMobile }) => {
   const collaborators = [
     {
-      name: "Aur Music",
-      insta: "https://www.instagram.com/aurmusic__?igshid=OGQ5ZDc2ODk2ZA%3D%3D",
-      youtube: "https://www.youtube.com/channel/UCrHQf1k-GtPByMHRsJjxO5g"
+      name: 'Aur Music',
+      insta: 'https://www.instagram.com/aurmusic__?igshid=OGQ5ZDc2ODk2ZA%3D%3D',
+      youtube: 'https://www.youtube.com/channel/UCrHQf1k-GtPByMHRsJjxO5g',
     },
     {
-      name: "Real Ridi",
-      insta: "https://www.instagram.com/realridi/",
-      youtube: "https://www.youtube.com/@Realridi"
+      name: 'Real Ridi',
+      insta: 'https://www.instagram.com/realridi/',
+      youtube: 'https://www.youtube.com/@Realridi',
     },
     {
-      name: "THENBHD",
-      insta: "https://www.instagram.com/thenbhd?igsh=cXdycXZ2c2ltcHVq",
-      youtube: "https://www.youtube.com/channel/UCDAXusYwRJpiSP2CHnXnVnw"
-    }
+      name: 'THENBHD',
+      insta: 'https://www.instagram.com/thenbhd?igsh=cXdycXZ2c2ltcHVq',
+      youtube: 'https://www.youtube.com/channel/UCDAXusYwRJpiSP2CHnXnVnw',
+    },
   ];
 
-  // Reels Data
   const reels = [
     {
       src: reel1,
-      instaLink: "https://www.instagram.com/reel/DCWK6DvM-Nv/?igsh=MnJ4cGUzZGltYWpq"
+      instaLink: 'https://www.instagram.com/reel/DCWK6DvM-Nv/?igsh=MnJ4cGUzZGltYWpq',
     },
     {
       src: reel2,
-      instaLink: "https://www.instagram.com/reel/DIOwFsFzPKF/?igsh=ajI3YmR4ZW9xNmxu"
-    }
+      instaLink: 'https://www.instagram.com/reel/DIOwFsFzPKF/?igsh=ajI3YmR4ZW9xNmxu',
+    },
   ];
 
-  // Instagram Views Counter State
+  const SHEET_URL =
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vSmmaNvlNyLYAEkHJOJZMldDGqbyqm-bEjRFVFePKZhPMWU83dNCBUUMykPswlhE5aRRdrvFfUKkZgZ/pub?output=csv';
+
   const [totalViews, setTotalViews] = useState('0');
   const [lastUpdated, setLastUpdated] = useState('');
   const [isLoadingViews, setIsLoadingViews] = useState(true);
 
-  // Video Player State
   const [current, setCurrent] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -48,29 +57,19 @@ const Reels = () => {
   const [showControls, setShowControls] = useState(false);
   const videoRef = useRef(null);
 
-  // REPLACE THIS WITH YOUR PUBLISHED SHEET URL
-  const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSmmaNvlNyLYAEkHJOJZMldDGqbyqm-bEjRFVFePKZhPMWU83dNCBUUMykPswlhE5aRRdrvFfUKkZgZ/pub?output=csv";
-
-  // Format number to 1.2M style
   const formatViews = (num) => {
     const numValue = parseInt(num.replace(/,/g, ''), 10);
-    if (numValue >= 1000000) {
-      return (numValue / 1000000).toFixed(1) + 'M';
-    }
-    if (numValue >= 1000) {
-      return (numValue / 1000).toFixed(1) + 'K';
-    }
+    if (numValue >= 1000000) return (numValue / 1000000).toFixed(1) + 'M';
+    if (numValue >= 1000) return (numValue / 1000).toFixed(1) + 'K';
     return numValue.toString();
   };
 
-  // Fetch views from Google Sheets
   const fetchViews = async () => {
     setIsLoadingViews(true);
     try {
       const response = await fetch(SHEET_URL);
       const csvData = await response.text();
       const rawValue = csvData.split('\n')[1] || '0';
-      
       setTotalViews(formatViews(rawValue));
       setLastUpdated(new Date().toLocaleDateString());
     } catch (error) {
@@ -81,25 +80,19 @@ const Reels = () => {
     }
   };
 
-  // Video Controls
   const handleSwitch = (index) => {
     setIsPlaying(false);
     setCurrent(index);
     setProgress(0);
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-    }
+    if (videoRef.current) videoRef.current.currentTime = 0;
   };
 
   const nextReel = () => handleSwitch((current + 1) % reels.length);
   const prevReel = () => handleSwitch((current - 1 + reels.length) % reels.length);
 
   const togglePlay = () => {
-    if (isPlaying) {
-      videoRef.current.pause();
-    } else {
-      videoRef.current.play();
-    }
+    if (isPlaying) videoRef.current.pause();
+    else videoRef.current.play();
     setIsPlaying(!isPlaying);
   };
 
@@ -120,38 +113,39 @@ const Reels = () => {
 
   useEffect(() => {
     fetchViews();
-    // Update every 24 hours
-    const interval = setInterval(fetchViews, 86400000);
+    const interval = setInterval(fetchViews, 86400000); // 24hr
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="w-full">
-      {/* Worked With Section */}
+      {/* Collaborators Section */}
       <section className="w-full px-4 py-20 bg-gradient-to-b from-black/70 to-black/30">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-14 font-playfair">Worked With</h2>
+          <h2 className={`font-playfair font-bold mb-14 ${isMobile ? 'text-3xl' : 'text-4xl'}`}>
+            Worked With
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {collaborators.map((collab, idx) => (
-              <div 
+              <div
                 key={idx}
                 className="bg-white/5 p-8 rounded-3xl hover:bg-white/10 transition-all duration-300 group"
               >
                 <h3 className="text-2xl font-bold mb-6 font-playfair">{collab.name}</h3>
                 <div className="flex justify-center space-x-6">
-                  <a 
+                  <a
                     href={collab.insta}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-full hover:from-purple-500 hover:to-pink-500 transition-all shadow-lg group-hover:scale-110"
+                    className="bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-full shadow-lg group-hover:scale-110 transition-all"
                   >
                     <Instagram size={20} className="text-white" />
                   </a>
-                  <a 
+                  <a
                     href={collab.youtube}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-red-600 p-3 rounded-full hover:bg-red-500 transition-all shadow-lg group-hover:scale-110"
+                    className="bg-red-600 p-3 rounded-full shadow-lg group-hover:scale-110 transition-all"
                   >
                     <Youtube size={20} className="text-white" />
                   </a>
@@ -165,11 +159,17 @@ const Reels = () => {
       {/* Reels Section */}
       <section className="w-full px-4 py-20 bg-gradient-to-b from-black/30 to-black/70">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold mb-10 text-center font-playfair">🎬 Top Reels</h2>
-          
+          <h2 className={`text-center font-playfair font-bold mb-10 ${isMobile ? 'text-3xl' : 'text-4xl'}`}>
+            🎬 Top Reels
+          </h2>
+
           <div className="relative w-full flex justify-center">
-            <div 
-              className="relative group w-full max-w-[360px] rounded-2xl overflow-hidden shadow-2xl"
+            <div
+              className="relative group rounded-2xl overflow-hidden shadow-2xl"
+              style={{
+                width: isMobile ? '260px' : '360px',
+                height: isMobile ? '460px' : '640px',
+              }}
               onMouseEnter={() => setShowControls(true)}
               onMouseLeave={() => setShowControls(false)}
             >
@@ -180,16 +180,24 @@ const Reels = () => {
                 muted={isMuted}
                 onClick={togglePlay}
                 onTimeUpdate={handleProgress}
-                className="w-full h-[640px] object-cover"
+                className="w-full h-full object-cover"
               />
 
-              <div className={`absolute inset-0 bg-gradient-to-t from-black/60 to-transparent ${showControls ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`} />
+              <div
+                className={`absolute inset-0 bg-gradient-to-t from-black/60 to-transparent ${
+                  showControls ? 'opacity-100' : 'opacity-0'
+                } transition-opacity duration-300`}
+              />
 
               {(showControls || !isPlaying) && (
-                <div className={`absolute bottom-0 left-0 right-0 p-4 space-y-2 ${showControls ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
+                <div
+                  className={`absolute bottom-0 left-0 right-0 p-4 space-y-2 ${
+                    showControls ? 'opacity-100' : 'opacity-0'
+                  } transition-opacity duration-300`}
+                >
                   <div className="h-1.5 bg-white/30 rounded-full w-full">
-                    <div 
-                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" 
+                    <div
+                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -204,7 +212,7 @@ const Reels = () => {
                       </button>
                     </div>
 
-                    <a 
+                    <a
                       href={reels[current].instaLink}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -227,28 +235,32 @@ const Reels = () => {
               )}
             </div>
 
-            <button
-              onClick={prevReel}
-              className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/20 text-white p-3 rounded-full shadow hover:bg-white/30 transition z-10 backdrop-blur-sm"
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <button
-              onClick={nextReel}
-              className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/20 text-white p-3 rounded-full shadow hover:bg-white/30 transition z-10 backdrop-blur-sm"
-            >
-              <ChevronRight size={24} />
-            </button>
+            {!isMobile && (
+              <>
+                <button
+                  onClick={prevReel}
+                  className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/20 text-white p-3 rounded-full shadow hover:bg-white/30 transition z-10 backdrop-blur-sm"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button
+                  onClick={nextReel}
+                  className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/20 text-white p-3 rounded-full shadow hover:bg-white/30 transition z-10 backdrop-blur-sm"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </>
+            )}
           </div>
 
-          {/* Replaced individual reel views with 30-day total */}
+          {/* 30-Day Views */}
           <div className="mt-6 text-center">
             <div className="inline-flex items-center bg-white/5 backdrop-blur-sm px-6 py-3 rounded-full">
               <div className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-transparent bg-clip-text">
                 {isLoadingViews ? '...' : totalViews}
               </div>
               <span className="ml-2 text-white/80">views in last 30 days</span>
-              <button 
+              <button
                 onClick={fetchViews}
                 className={`ml-3 p-1 rounded-full ${isLoadingViews ? 'animate-spin' : 'hover:bg-white/10'}`}
                 disabled={isLoadingViews}
