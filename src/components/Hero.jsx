@@ -7,7 +7,7 @@ const Hero = ({ isMobile }) => {
 
   return (
     <div className="relative">
-      {/* Fixed background */}
+      {/* Background */}
       <div className="fixed inset-0 -z-10">
         <img
           src="/bg1.jpg"
@@ -17,9 +17,8 @@ const Hero = ({ isMobile }) => {
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      {/* Hero Section */}
       <section className="relative min-h-screen px-4">
-        {/* Top Right Profile Icon */}
+        {/* Profile button */}
         <a
           href="https://www.instagram.com/renn.india?igsh=MXV0d3pndTR5dzZ6Mg=="
           target="_blank"
@@ -46,7 +45,7 @@ const Hero = ({ isMobile }) => {
           </div>
         </a>
 
-        {/* Center Text */}
+        {/* Center text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
           <h1
             className={`font-playfair font-extrabold tracking-wide drop-shadow-lg mb-2 ${
@@ -62,9 +61,23 @@ const Hero = ({ isMobile }) => {
           >
             Professional Video Editor • Transforming clips into cinematic stories
           </p>
+
+          {/* Show stat cards below text on mobile */}
+          {isMobile && (
+            <div className="mt-6 space-y-3 w-full max-w-xs">
+              <div className="bg-black/50 backdrop-blur-sm p-4 rounded-lg">
+                <p className="text-white text-sm">Current Reel Views</p>
+                <p className="text-white text-2xl font-bold">2.1M</p>
+              </div>
+              <div className="bg-gradient-to-r from-purple-500/80 to-pink-500/80 p-4 rounded-lg">
+                <p className="text-white text-sm">Highest Viewed Reel</p>
+                <p className="text-white text-2xl font-bold">4.0M</p>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Side Stats — desktop only */}
+        {/* Desktop version of stat cards (bottom left) */}
         {!isMobile && (
           <div className="absolute left-6 bottom-1/3 z-10 space-y-2">
             <div className="bg-black/50 backdrop-blur-sm p-4 rounded-lg max-w-xs">
